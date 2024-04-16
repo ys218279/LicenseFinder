@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 
 if (process.argv.length < 3) {
     console.error('Usage: ts-node script.ts <startingPath>');
@@ -73,7 +72,7 @@ function findFilePaths(processedFiles: string[], callback: (filePathList: string
                 if (pendingReads === 0) {
                     callback(filePathList);
                 }
-                return;
+
             }
 
             if (files.includes("package.json")) {
@@ -97,7 +96,7 @@ function findFilePaths(processedFiles: string[], callback: (filePathList: string
                                     callback(filePathList);
                                 }
                             }
-                            return;
+
                         }
 
                         if (nestedFiles.includes('package.json')) {
@@ -126,7 +125,7 @@ function findLicense(files: string[], callback: (data: { [key: string]: string[]
         fs.readFile(file, 'utf-8', (err, content) => {
             if (err) {
                 console.error("Error reading file:", file, err);
-                return;
+
             }
 
             const json = JSON.parse(content);
@@ -157,13 +156,13 @@ function writeToJSON(content: { [key: string]: string[] }, dir: string, fileName
 };
 
 // Define a function to process the fetched data. Used for debugging
-function processData(data:string[]) {
+function processData(data: string[]) {
     console.log("Data processed:", data);
 }
 
-goToNodeModules(startingPath,(filePaths)=>{
-    validating(filePaths,(processFiles)=>{
-        findFilePaths(processFiles,(filePathsList)=>{
+goToNodeModules(startingPath, (filePaths) => {
+    validating(filePaths, (processFiles) => {
+        findFilePaths(processFiles, (filePathsList) => {
             findLicense(filePathsList, (data) => {
                 writeToJSON(data, '<destination path>', 'results.json')
             })
