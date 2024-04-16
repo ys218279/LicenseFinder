@@ -1,13 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-if (process.argv.length < 3) {
+//argparse 
+if (process.argv.length < 4) {
     console.error('Usage: ts-node script.ts <startingPath>');
     process.exit(1);
 }
 
 // Get the starting path from the command-line arguments
 const startingPath = process.argv[2];
+const destinationPath = process.argv[3]
 
 function goToNodeModules(startingPath: string, callback: (filePaths: string[]) => void) {
     console.log("start function")
@@ -59,7 +61,7 @@ function validating(filePaths: string[], callback: (processedFiles: string[]) =>
     });
 }
 
-function findFilePaths(processedFiles: string[], callback: (filePathList: string[]) => void) {
+function findJsonFiles(processedFiles: string[], callback: (filePathList: string[]) => void) {
     console.log('collecting filePaths');
     const filePathList: string[] = [];
     let pendingReads: number = processedFiles.length;
@@ -151,8 +153,12 @@ function findLicense(files: string[], callback: (data: { [key: string]: string[]
 function writeToJSON(content: { [key: string]: string[] }, dir: string, fileName: string) {
     const filePath = path.join(dir, fileName);
     const objectContent = JSON.stringify(content);
-    //console.log(objectContent)
-    fs.writeFileSync(filePath, objectContent);
+    fs.writeFile(filePath,objectContent,(err)=>{
+        if (err){
+            console.log(err);
+        }
+        console.log("File written successfully\n");
+    })
 };
 
 // Define a function to process the fetched data. Used for debugging
@@ -162,9 +168,9 @@ function processData(data: string[]) {
 
 goToNodeModules(startingPath, (filePaths) => {
     validating(filePaths, (processFiles) => {
-        findFilePaths(processFiles, (filePathsList) => {
+        findJsonFiles(processFiles, (filePathsList) => {
             findLicense(filePathsList, (data) => {
-                writeToJSON(data, '<destination path>', 'results.json')
+                writeToJSON(data, destinationPath, 'results.json')
             })
         })
     })
