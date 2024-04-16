@@ -1,9 +1,9 @@
 {
-    "/Users/yousen01/Arm/ksc-ide/node_modules/@xtuc/ieee754/package.json": "BSD-3-Clause",
-    "/Users/yousen01/Arm/ksc-ide/node_modules/@xtuc/long/package.json": "Apache-2.0",
-    "/Users/yousen01/Arm/ksc-ide/node_modules/JSONStream/package.json": "(MIT OR Apache-2.0)",
-    "/Users/yousen01/Arm/ksc-ide/node_modules/@webpack-cli/configtest/package.json": "MIT",
-    "/Users/yousen01/Arm/ksc-ide/node_modules/@webpack-cli/info/package.json": "MIT",
-    "/Users/yousen01/Arm/ksc-ide/node_modules/@webpack-cli/serve/package.json": "MIT",
-    "/Users/yousen01/Arm/ksc-ide/node_modules/abab/package.json": "BSD-3-Clause"
+    "/ieee754/package.json": "BSD-3-Clause",
+    "/long/package.json": "Apache-2.0",
+    "/JSONStream/package.json": "(MIT OR Apache-2.0)",
+    "/configtest/package.json": "MIT",
+    "/info/package.json": "MIT",
+    "/serve/package.json": "MIT",
+    "abab/package.json": "BSD-3-Clause"
 }
