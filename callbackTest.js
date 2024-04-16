@@ -2,13 +2,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs");
 var path = require("path");
-var array = [
-    '/Users/yousen01/Arm/ksc-ide/node_modules/@webpack-cli',
-    '/Users/yousen01/Arm/ksc-ide/node_modules/@xtuc',
-    '/Users/yousen01/Arm/ksc-ide/node_modules/JSONStream',
-    '/Users/yousen01/Arm/ksc-ide/node_modules/abab',
-    '/Users/yousen01/Arm/ksc-ide/node_modules/.bin'
-];
+if (process.argv.length < 3) {
+    console.error('Usage: ts-node script.ts <startingPath>');
+    process.exit(1);
+}
+// Get the starting path from the command-line arguments
+var startingPath = process.argv[2];
+function goToNodeModules(startingPath, callback) {
+    console.log("start function");
+    var filePaths = [];
+    var dir = path.join(startingPath, "node_modules");
+    fs.readdir(dir, function (err, files) {
+        if (err) {
+            console.error(err);
+            return; // Exit early if there's an error
+        }
+        files.forEach(function (file) {
+            filePaths.push(path.join(dir, file));
+        });
+        console.log(filePaths); // Log the populated filePaths array
+        callback(filePaths);
+    });
+}
 function validating(filePaths, callback) {
     console.log("validating");
     var processedFiles = [];
@@ -44,112 +59,52 @@ function validating(filePaths, callback) {
 function findFilePaths(processedFiles, callback) {
     console.log('collecting filePaths');
     var filePathList = [];
-    var authors = [];
     var pendingReads = processedFiles.length;
     processedFiles.forEach(function (filePath) {
         fs.readdir(filePath, function (err, files) {
             if (err) {
                 console.error(err);
-                --pendingReads;
-            }
-            var pendingStats = files.length || 0;
-            files.forEach(function (file) {
-                var fullPath = path.join(filePath, file);
-                fs.stat(fullPath, function (err, stats) {
-                    if (err) {
-                        console.error(err);
-                        return; // Return early if there's an error
-                    }
-                    if (stats.isDirectory()) {
-                        authors.push(fullPath);
-                    }
-                    filePathList.push(fullPath);
-                    pendingStats--;
-                    if (pendingStats === 0) {
-                        // Check if there are authors to traverse
-                        if (authors.length > 0) {
-                            authors.forEach(function (filePathA) {
-                                fs.readdir(filePathA, function (err, nestedFilesA) {
-                                    if (err) {
-                                        console.error(err);
-                                    }
-                                    nestedFilesA.forEach(function (nestedFile) {
-                                        filePathList.push(path.join(filePathA, nestedFile));
-                                    });
-                                });
-                            });
-                        }
-                        pendingReads--;
-                        if (pendingReads === 0) {
-                            //console.log('found all filePaths');
-                            //console.log(filePathList);
-                            callback(filePathList);
-                        }
-                    }
-                });
-            });
-        });
-    });
-}
-function findJSON(filePathList, callback) {
-    console.log('finding JSON files');
-    var jsonFiles = [];
-    var pendingReads = filePathList.length;
-    filePathList.forEach(function (filePath) {
-        if (filePath.endsWith('package.json')) {
-            console.log(filePath);
-            jsonFiles.push(filePath);
-            pendingReads--;
-            if (pendingReads === 0) {
-                callback(jsonFiles);
-            }
-        }
-        else {
-            fs.stat(filePath, function (err, stats) {
-                //console.log("stats")
-                if (err) {
-                    console.error(err);
-                    pendingReads--;
-                    if (pendingReads === 0) {
-                        callback(jsonFiles);
-                    }
-                    return;
+                pendingReads--;
+                if (pendingReads === 0) {
+                    callback(filePathList);
                 }
-                if (stats.isDirectory()) {
-                    fs.readdir(filePath, function (err, files) {
+            }
+            if (files.includes("package.json")) {
+                filePathList.push(path.join(filePath, 'package.json'));
+                pendingReads--;
+                if (pendingReads === 0) {
+                    callback(filePathList);
+                }
+            }
+            else {
+                var pendingNestedReads_1 = files.length;
+                files.forEach(function (file) {
+                    var nestedFilePath = path.join(filePath, file);
+                    fs.readdir(nestedFilePath, function (err, nestedFiles) {
                         if (err) {
                             console.error(err);
-                            pendingReads--;
-                            if (pendingReads === 0) {
-                                callback(jsonFiles);
-                            }
-                            return;
-                        }
-                        var pendingNestedReads = files.length;
-                        files.forEach(function (file) {
-                            var fullPath = path.join(filePath, file);
-                            if (fullPath.endsWith('package.json')) {
-                                jsonFiles.push(fullPath);
-                            }
-                            pendingNestedReads--;
-                            if (pendingNestedReads === 0) {
+                            pendingNestedReads_1--;
+                            if (pendingNestedReads_1 === 0) {
                                 pendingReads--;
                                 if (pendingReads === 0) {
-                                    callback(jsonFiles);
+                                    callback(filePathList);
                                 }
                             }
-                        });
+                        }
+                        if (nestedFiles.includes('package.json')) {
+                            filePathList.push(path.join(nestedFilePath, 'package.json'));
+                        }
+                        pendingNestedReads_1--;
+                        if (pendingNestedReads_1 === 0) {
+                            pendingReads--;
+                            if (pendingReads === 0) {
+                                callback(filePathList);
+                            }
+                        }
                     });
-                }
-                else {
-                    pendingReads--;
-                    if (pendingReads === 0) {
-                        console.log(jsonFiles);
-                        callback(jsonFiles);
-                    }
-                }
-            });
-        }
+                });
+            }
+        });
     });
 }
 function findLicense(files, callback) {
@@ -159,16 +114,18 @@ function findLicense(files, callback) {
         fs.readFile(file, 'utf-8', function (err, content) {
             if (err) {
                 console.error("Error reading file:", file, err);
-                return;
             }
             var json = JSON.parse(content);
             if (json && json.license) {
-                data[file] = json.license;
+                var license = json.license;
+                if (!data[license]) {
+                    data[license] = [];
+                }
+                data[license].push(file);
             }
             filesProcessed++;
             // If all files have been processed, invoke the callback
             if (filesProcessed === files.length) {
-                //console.log("All files processed:", data);
                 callback(data);
             }
         });
@@ -181,23 +138,15 @@ function writeToJSON(content, dir, fileName) {
     fs.writeFileSync(filePath, objectContent);
 }
 ;
-// Define a function to process the fetched data
+// Define a function to process the fetched data. Used for debugging
 function processData(data) {
     console.log("Data processed:", data);
 }
-/*
-findFilePaths(array, (filePathList) => {
-    findJSON(filePathList, (jsonFiles) => {
-        processData(jsonFiles)
-    });
-});
-
-*/
-validating(array, function (processedFiles) {
-    findFilePaths(processedFiles, function (filePathList) {
-        findJSON(filePathList, function (jsonFiles) {
-            findLicense(jsonFiles, function (data) {
-                writeToJSON(data, '/Users/yousen01/Documents/Practice code/Federicco challenges/results', 'results.json');
+goToNodeModules(startingPath, function (filePaths) {
+    validating(filePaths, function (processFiles) {
+        findFilePaths(processFiles, function (filePathsList) {
+            findLicense(filePathsList, function (data) {
+                writeToJSON(data, '<destination path>', 'results.json');
             });
         });
     });
