@@ -1,4 +1,6 @@
 {
+   " MIT":
+    [
     "/ieee754/package.json": "BSD-3-Clause",
     "/long/package.json": "Apache-2.0",
     "/JSONStream/package.json": "(MIT OR Apache-2.0)",
@@ -6,4 +8,5 @@
     "/info/package.json": "MIT",
     "/serve/package.json": "MIT",
     "abab/package.json": "BSD-3-Clause"
+    ]
 }
