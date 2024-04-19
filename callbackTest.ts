@@ -23,7 +23,7 @@ function goToNodeModules(startingPath: string, callback: (filePaths: string[]) =
         files.forEach((file) => {
             filePaths.push(path.join(dir, file));
         });
-        console.log(filePaths); // Log the populated filePaths array
+        console.log(filePaths); 
         callback(filePaths);
     });
 }
