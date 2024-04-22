@@ -3,7 +3,7 @@ import * as path from 'path';
 
 //argparse 
 if (process.argv.length < 4) {
-    console.error('Usage: ts-node script.ts <startingPath>');
+    console.error('Usage: ts-node script.ts <startingPath> <destinationPath>');
     process.exit(1);
 }
 
