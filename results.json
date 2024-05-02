@@ -1,12 +1,18 @@
-{
-   " MIT":
-    [
-    "/ieee754/package.json": "BSD-3-Clause",
-    "/long/package.json": "Apache-2.0",
-    "/JSONStream/package.json": "(MIT OR Apache-2.0)",
-    "/configtest/package.json": "MIT",
-    "/info/package.json": "MIT",
-    "/serve/package.json": "MIT",
-    "abab/package.json": "BSD-3-Clause"
-    ]
-}
+"(Apache-2.0 AND MIT)": [
+        "bytesish"
+    ],
+    "CC-BY-4.0": [
+        "caniuse-lite",
+        "@vscode/codicons"
+    ],
+    "MIT/X11": [
+        "chainsaw",
+        "optimist",
+        "traverse"
+    ],
+    "(MPL-2.0 OR Apache-2.0)": [
+        "dompurify"
+    ],
+    "LGPL-3.0-or-later": [
+        "eslint-plugin-deprecation"
+    ],
