@@ -1,2 +1,1 @@
-When executing use the following command: 'ts-node script.ts <startingPath> <destinationPath>'.
-This will create a new JSON file called results. 
+KSC VSCode v1.89.1-0 built from [pp]https://github.com/Arm-Debug/ksc-vscode-source/tree/release-1.89.1-0
